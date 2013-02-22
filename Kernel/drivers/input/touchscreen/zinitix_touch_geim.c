@@ -1074,11 +1074,26 @@ bool ts_check_need_upgrade(u16 curVersion, u16 curRegVersion)
 
 	printk(KERN_INFO "cur Version = 0x%x, new Version = 0x%x\n",
 		curVersion, newVersion);
+// TJM 02-21-2013 - uncomment to force changing the firmware version, if different
+//#define BACKDATE
 
+#ifndef BACKDATE
 	if (curVersion < newVersion)
 		return true;
 	else if (curVersion > newVersion)
 		return false;
+#else //BACKDATE
+	if (curVersion != newVersion)
+	{	
+		printk(KERN_INFO "BACKDATE set, changing cur Version = 0x%x to new Version = 0x%x\n", curVersion, newVersion);
+		return true;
+	}
+	else if (curVersion == newVersion)
+	{
+		printk(KERN_INFO "BACKDATE set, cur Version = 0x%x same as new Version = 0x%x\n", curVersion, newVersion);
+		return false;
+	}
+#endif //BACKDATE
 
 #if BT4x2_Series
 	if (m_firmware_data[0x3FFE] == 0xff
